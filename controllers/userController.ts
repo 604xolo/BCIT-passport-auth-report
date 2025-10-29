@@ -1,23 +1,23 @@
-import {userModel} from "../models/userModel";
+import {userModel, type User} from "../models/userModel";
 
-const getUserByEmailIdAndPassword = (email: string, password: string) => {
-  let user = userModel.findOne(email);
-  if (user) {
-    if (isUserValid(user, password)) {
-      return user;
-    }
+function getUserByEmailIdAndPassword(email: string, password: string): User | null {
+  try {
+    const user = userModel.findOne(email);
+    return isUserValid(user, password) ? user : null;
+  } catch {
+    return null;
   }
-  return null;
-};
-const getUserById = (id:any) => {
-  let user = userModel.findById(id);
-  if (user) {
-    return user;
-  }
-  return null;
-};
+}
 
-function isUserValid(user: any, password: string) {
+function getUserById(id: number): User | null {
+  try {
+    return userModel.findById(id);
+  } catch {
+    return null;
+  }
+}
+
+function isUserValid(user: User, password: String):Boolean {
   return user.password === password;
 }
 

@@ -1,16 +1,21 @@
+// src/middleware/passportMiddleware.ts
 import { Application } from "express";
 import passport from "passport";
 import PassportConfig from "./PassportConfig";
 
 import localStrategy from "./passportStrategies/localStrategy";
-import passportGitHubStrategy from "./passportStrategies/githubStrategy";
+import githubStrategy from "./passportStrategies/githubStrategy";
 
-// No need to actually pass the instance of passport since it returns a singleton
-const passportConfig = new PassportConfig();
-passportConfig.addStrategies([localStrategy /* passportGitHubStrategy */]);
-const passportMiddleware = (app: Application): void => {
+let configured = false;
+
+export default function passportMiddleware(app: Application): void {
+  if (!configured) {
+    // Register all strategies once
+    new PassportConfig([localStrategy, githubStrategy]);
+    configured = true;
+  }
+
+  // Then attach the middlewares
   app.use(passport.initialize());
   app.use(passport.session());
-};
-
-export default passportMiddleware;
+}

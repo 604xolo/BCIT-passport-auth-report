@@ -1,4 +1,7 @@
-import express, { Application } from "express";
+import dotenv from "dotenv";
+dotenv.config();
+
+import express, { Application, Request, Response, NextFunction } from "express";
 import expressLayouts from "express-ejs-layouts";
 import session from "express-session";
 import path from "path";
