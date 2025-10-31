@@ -3,11 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const express_1 = __importDefault(require("express"));
 const express_ejs_layouts_1 = __importDefault(require("express-ejs-layouts"));
 const express_session_1 = __importDefault(require("express-session"));
 const path_1 = __importDefault(require("path"));
 const passportMiddleware_1 = __importDefault(require("./middleware/passportMiddleware"));
+const adminRoute_1 = __importDefault(require("./routes/adminRoute"));
 const port = process.env.port || 8000;
 const app = (0, express_1.default)();
 app.set("view engine", "ejs");
@@ -40,6 +43,7 @@ app.use((req, res, next) => {
 });
 app.use("/", indexRoute_1.default);
 app.use("/auth", authRoute_1.default);
+app.use("/admin", adminRoute_1.default);
 app.listen(port, () => {
     console.log(`🚀 Server has started on port ${port}`);
 });

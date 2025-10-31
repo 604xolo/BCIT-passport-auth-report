@@ -5,9 +5,6 @@ import type { Request } from "express";
 import { PassportStrategy } from "../../interfaces";
 import { userModel } from "../../models/userModel";
 
-// NOTE: This demo strategy attempts to match a user by email from GitHub.
-// In real apps, you’d create a user if not found, or map by provider id.
-
 const githubStrategyInstance = new GitHubStrategy(
   {
     clientID: process.env.GITHUB_CLIENT_ID ?? "",
@@ -24,21 +21,17 @@ const githubStrategyInstance = new GitHubStrategy(
     done: (err: any, user?: Express.User | false, info?: { message?: string }) => void
   ) => {
     try {
-      const email = profile.emails?.[0]?.value;
-      if (!email) return done(null, false, { message: "No email returned by GitHub." });
+      const email = profile.emails?.[0]?.value;  // may be undefined
+      const name = profile.displayName || profile.username || "GitHub User";
+      const avatar = profile.photos?.[0]?.value;
 
-      // Try to find an existing user by email
-      let user: Express.User | null = null;
-      try {
-        user = userModel.findOne(email); // uses numeric id in your demo DB
-      } catch {
-        // No provisioning flow in this demo:
-        return done(null, false, { message: "User not provisioned for GitHub login." });
+      let user = email ? userModel.findOneByEmail(email) : undefined;
+      if (!user) {
+        user = userModel.createFromGithub({ name, email, avatarUrl: avatar });
       }
-
       return done(null, user);
     } catch (err) {
-      return done(err);
+      return done(err as Error);
     }
   }
 );

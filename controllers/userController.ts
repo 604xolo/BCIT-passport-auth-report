@@ -8,6 +8,10 @@ function getUserByEmailIdAndPassword(email: string, password: string): User | nu
     return null;
   }
 }
+function getUserByEmail(email: string): User | null {
+  const u = userModel.findOneByEmail(email);
+  return u ?? null;
+}
 
 function getUserById(id: number): User | null {
   try {
@@ -23,5 +27,7 @@ function isUserValid(user: User, password: String):Boolean {
 
 export {
   getUserByEmailIdAndPassword,
-  getUserById,
+  getUserByEmail,
+  getUserById, 
+  isUserValid
 };

@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const passport_1 = __importDefault(require("passport"));
 class PassportConfig {
     /*
-     FIX ME 😭
+     FIX ME 😭DONE ?
      The problem with this class is... if the caller forgets to call
      the addStrategies method...our program won't work.
 
@@ -16,9 +16,12 @@ class PassportConfig {
      private from the outside world. This way, we can GUARANTEE that our
      passport strategies are added when this class is created. ⭐️
     */
+    constructor(strategies) {
+        this.addStrategies(strategies);
+    }
     addStrategies(strategies) {
-        strategies.forEach((passportStrategy) => {
-            passport_1.default.use(passportStrategy.name, passportStrategy.strategy);
+        strategies.forEach(s => {
+            passport_1.default.use(s.name, s.strategy);
         });
     }
 }

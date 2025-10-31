@@ -5,38 +5,38 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const passport_1 = __importDefault(require("passport"));
 const passport_local_1 = require("passport-local");
-const userController_1 = require("../../controllers/userController");
-const localStrategy = new passport_local_1.Strategy({
-    usernameField: "email",
-    passwordField: "password",
-}, (email, password, done) => {
-    const user = (0, userController_1.getUserByEmailIdAndPassword)(email, password);
-    return user
-        ? done(null, user)
-        : done(null, false, {
-            message: "Your login details are not valid. Please try again",
-        });
+const userModel_1 = require("../../models/userModel");
+const localStrategyInstance = new passport_local_1.Strategy({ usernameField: "email", passwordField: "password" }, (email, password, done) => {
+    try {
+        const user = userModel_1.userModel.findOneByEmail(email);
+        if (!user) {
+            // email not found
+            return done(null, false, { message: `Couldn't find user with email ${email}` });
+        }
+        if (user.password !== password) {
+            // email exists, wrong password
+            return done(null, false, { message: "Incorrect password" });
+        }
+        return done(null, user);
+    }
+    catch (err) {
+        return done(err);
+    }
 });
-/*
-FIX ME (types) 😭
-*/
-passport_1.default.serializeUser(function (user, done) {
+void passport_1.default.serializeUser((user, done) => {
     done(null, user.id);
 });
-/*
-FIX ME (types) 😭
-*/
-passport_1.default.deserializeUser(function (id, done) {
-    let user = (0, userController_1.getUserById)(id);
-    if (user) {
-        done(null, user);
+void passport_1.default.deserializeUser((id, done) => {
+    try {
+        const user = userModel_1.userModel.findById(id);
+        done(null, user || false);
     }
-    else {
-        done({ message: "User not found" }, null);
+    catch (_a) {
+        done(null, false);
     }
 });
 const passportLocalStrategy = {
-    name: 'local',
-    strategy: localStrategy,
+    name: "local",
+    strategy: localStrategyInstance,
 };
 exports.default = passportLocalStrategy;

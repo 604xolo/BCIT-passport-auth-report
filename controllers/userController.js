@@ -1,25 +1,31 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserById = exports.getUserByEmailIdAndPassword = void 0;
-const userModel_1 = require("../models/userModel");
-const getUserByEmailIdAndPassword = (email, password) => {
-    let user = userModel_1.userModel.findOne(email);
-    if (user) {
-        if (isUserValid(user, password)) {
-            return user;
-        }
-    }
-    return null;
-};
 exports.getUserByEmailIdAndPassword = getUserByEmailIdAndPassword;
-const getUserById = (id) => {
-    let user = userModel_1.userModel.findById(id);
-    if (user) {
-        return user;
-    }
-    return null;
-};
+exports.getUserByEmail = getUserByEmail;
 exports.getUserById = getUserById;
+exports.isUserValid = isUserValid;
+const userModel_1 = require("../models/userModel");
+function getUserByEmailIdAndPassword(email, password) {
+    try {
+        const user = userModel_1.userModel.findOne(email);
+        return isUserValid(user, password) ? user : null;
+    }
+    catch (_a) {
+        return null;
+    }
+}
+function getUserByEmail(email) {
+    const u = userModel_1.userModel.findOneByEmail(email);
+    return u !== null && u !== void 0 ? u : null;
+}
+function getUserById(id) {
+    try {
+        return userModel_1.userModel.findById(id);
+    }
+    catch (_a) {
+        return null;
+    }
+}
 function isUserValid(user, password) {
     return user.password === password;
 }
